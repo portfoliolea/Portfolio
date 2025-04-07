@@ -1,0 +1,136 @@
+:root {
+    --scale-factor: 2.5; /* Taille par défaut, à ajuster */
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.all {
+    width: 680px;
+    transform: scale(var(--scale-factor));
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-flip {
+    position: absolute;
+    padding: 40px 40px 40px 340px;
+    width: 300px;
+    height: 400px;
+    overflow: hidden;
+}
+
+.recto {
+    position: absolute;
+    z-index: 2;
+    -webkit-transform-origin: 1315px 500px;
+    -webkit-transform: translate(-1030px, -500px) rotate(-32deg);
+    -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+    -webkit-transition-duration: 1s;
+}
+
+.page-recto {
+    width: 1285px;
+    height: 1388px;
+    overflow: hidden;
+}
+
+    .page-recto > div {
+        -webkit-transform-origin: 285px 0;
+        -webkit-transform: translate(1030px, 500px) rotate(32deg);
+        -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+        -webkit-transition-duration: 1s;
+        width: 285px;
+        height: 388px;
+        position: relative;
+    }
+
+        .page-recto > div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Simule background-size: cover */
+            object-position: center; /* Centrer l'image */
+        }
+
+.verso {
+    -webkit-transform-origin: 1315px 500px;
+    -webkit-transform: translate(-1030px, -500px) rotate(-32deg);
+    -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+    -webkit-transition-duration: 1s;
+    position: absolute;
+    z-index: 2;
+}
+
+.page-verso {
+    width: 1285px;
+    height: 1388px;
+    overflow: hidden;
+}
+
+    .page-verso > div {
+        -webkit-transform-origin: 0 0;
+        -webkit-transform: translate(1255px, 500px) rotate(-32deg);
+        -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+        -webkit-transition-duration: 1s;
+        -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, .5);
+        width: 285px;
+        height: 388px;
+        position: relative;
+    }
+
+        .page-verso > div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Simule background-size: cover */
+            object-position: center; /* Centrer l'image */
+        }
+
+        .page-verso > div > div {
+            width: 9px;
+            height: 500px;
+            float: right;
+            background: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0)), to(rgba(0,0,0,.20)));
+        }
+
+.page-flip.flipped .recto {
+    -webkit-transform-origin: 1570px 500px;
+    -webkit-transform: translate(-1285px, -500px) rotate(0deg);
+}
+
+.page-flip.flipped .page-recto > div {
+    -webkit-transform-origin: 285px 0;
+    -webkit-transform: translate(1285px, 500px) rotate(0deg);
+}
+
+.page-flip.flipped .verso {
+    -webkit-transform-origin: 1570px 500px;
+    -webkit-transform: translate(-1285px, -500px) rotate(0deg);
+}
+
+.page-flip.flipped .page-verso > div {
+    -webkit-transform-origin: 0 0;
+    -webkit-transform: translate(1000px, 500px) rotate(0deg);
+}
+
+/* Style des boutons de contrôle */
+.control-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.rotate-btn {
+    right: 10px;
+}
+
+.close-btn {
+    left: 10px;
+}
