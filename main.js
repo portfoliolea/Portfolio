@@ -1,73 +1,92 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const rotateBtn = document.querySelector('.rotate-btn');
-    const closeBtn = document.querySelector('.close-btn');
-    const pageFlips = document.querySelectorAll('.page-flip');
-    const pageFlipsArray = Array.from(pageFlips).reverse(); // Inverser l'ordre pour affichage correct
-    let currentPageIndex = -1; // Aucune page ouverte au départ
+    const rotateBtn = document.querySelector(".rotate-btn");
+    const closeBtn = document.querySelector(".close-btn");
+    const controls = document.querySelector(".controls");
+    const root = document.documentElement;
+    const pageFlips = document.querySelectorAll(".page-flip");
+    const pageFlipsArray = Array.from(pageFlips).reverse();
+    let currentPageIndex = -1;
 
-    const zIndexTimeouts = new Map(); // Pour suivre les timeouts actifs
+    const zIndexTimeouts = new Map();
+    const baseBookWidth = 680;
+    const baseBookHeight = 400;
+    const maxScale = 2.5;
 
-    // Initialisation : chaque page commence avec un z-index négatif basé sur son index
+    function updateBookScale() {
+        const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+        const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const compactScreen = viewportWidth < 700;
+        const landscapePhone = compactScreen && viewportWidth > viewportHeight;
+        const horizontalPadding = landscapePhone ? 16 : (compactScreen ? 24 : 64);
+        const controlsHeight = controls ? controls.offsetHeight : 56;
+        const layoutGap = viewportHeight < 700 ? 12 : 24;
+        const verticalChrome = landscapePhone ? 12 : (compactScreen ? 24 : 40);
+        const availableWidth = Math.max(180, viewportWidth - horizontalPadding);
+        const availableHeight = Math.max(180, viewportHeight - controlsHeight - layoutGap - verticalChrome);
+        const scaleFromWidth = availableWidth / baseBookWidth;
+        const scaleFromHeight = availableHeight / baseBookHeight;
+        const nextScale = Math.max(0.18, Math.min(maxScale, scaleFromWidth, scaleFromHeight));
+
+        root.style.setProperty("--scale-factor", nextScale.toFixed(3));
+    }
+
     pageFlipsArray.forEach((page, i) => {
         page.style.zIndex = -i;
     });
 
-    // Ouvrir une page
+    updateBookScale();
+    window.addEventListener("resize", updateBookScale);
+    window.addEventListener("orientationchange", updateBookScale);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", updateBookScale);
+    }
+    setTimeout(updateBookScale, 0);
+
     function openPage(pageIndex) {
         const pageToOpen = pageFlipsArray[pageIndex];
 
-        // Annule un éventuel timeout actif
         if (zIndexTimeouts.has(pageToOpen)) {
             clearTimeout(zIndexTimeouts.get(pageToOpen));
             zIndexTimeouts.delete(pageToOpen);
         }
 
-        // Remet le z-index à une valeur positive
         pageToOpen.style.zIndex = pageIndex + 1;
 
-        // Ne rien faire si déjà ouverte
-        if (pageToOpen.classList.contains('flipped')) return;
+        if (pageToOpen.classList.contains("flipped")) return;
 
-        pageToOpen.classList.add('flipped');
+        pageToOpen.classList.add("flipped");
         currentPageIndex = pageIndex;
     }
 
-    // Fermer la dernière page ouverte
     function closeLastOpenedPage() {
         if (currentPageIndex === -1) return;
 
         const pageToClose = pageFlipsArray[currentPageIndex];
+        const closedPageIndex = currentPageIndex;
 
-        // Annule un timeout précédent si présent
         if (zIndexTimeouts.has(pageToClose)) {
             clearTimeout(zIndexTimeouts.get(pageToClose));
             zIndexTimeouts.delete(pageToClose);
         }
 
-        // Enlève la classe pour lancer l’animation
-        pageToClose.classList.remove('flipped');
+        pageToClose.classList.remove("flipped");
 
-        // Après l’animation (1s), remettre un z-index négatif
         const timeoutId = setTimeout(() => {
-            pageToClose.style.zIndex = -currentPageIndex;
+            pageToClose.style.zIndex = -closedPageIndex;
             zIndexTimeouts.delete(pageToClose);
         }, 1000);
 
         zIndexTimeouts.set(pageToClose, timeoutId);
-
-        // Mettre à jour l’index
         currentPageIndex = currentPageIndex > 0 ? currentPageIndex - 1 : -1;
     }
 
-    // Clique sur "faire tourner"
-    rotateBtn.addEventListener('click', function () {
+    rotateBtn.addEventListener("click", function () {
         if (currentPageIndex < pageFlipsArray.length - 1) {
             openPage(currentPageIndex + 1);
         }
     });
 
-    // Clique sur "fermer"
-    closeBtn.addEventListener('click', function () {
+    closeBtn.addEventListener("click", function () {
         closeLastOpenedPage();
     });
 });

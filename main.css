@@ -1,15 +1,58 @@
 :root {
-    --scale-factor: 2.5; /* Taille par d�faut, � ajuster */
+    --scale-factor: 1;
+    --page-width: 285px;
+    --page-height: 388px;
+    --flip-width: 1705px;
+    --flip-height: 1500px;
+    --recto-origin-x: var(--page-width);
+    --recto-initial-x: calc(1315px - var(--page-width));
+    --recto-open-x: calc(1570px - var(--page-width));
+    --verso-open-x: calc(1285px - var(--page-width));
+    --page-lift: clamp(18px, 6vh, 80px);
+    --controls-gap: clamp(14px, 3.5vh, 42px);
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     padding: 0;
     margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.6), transparent 32%),
+        linear-gradient(180deg, #f7efe4 0%, #eadccb 100%);
+}
+
+.layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    padding: 1.5rem;
+}
+
+.book-stage {
+    width: 100%;
+    height: calc(400px * var(--scale-factor));
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: visible;
+    margin-top: calc(var(--page-lift) * -1);
+    margin-bottom: var(--page-lift);
 }
 
 .all {
+    position: relative;
     width: 680px;
+    height: 400px;
     transform: scale(var(--scale-factor));
+    transform-origin: top center;
     margin-left: auto;
     margin-right: auto;
 }
@@ -17,9 +60,10 @@ body {
 .page-flip {
     position: absolute;
     padding: 40px 40px 40px 340px;
-    width: 300px;
-    height: 400px;
+    width: var(--flip-width);
+    height: var(--flip-height);
     overflow: hidden;
+    pointer-events: none;
 }
 
 .recto {
@@ -29,6 +73,10 @@ body {
     -webkit-transform: translate(-1030px, -500px) rotate(-32deg);
     -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
     -webkit-transition-duration: 1s;
+    transform-origin: 1315px 500px;
+    transform: translate(-1030px, -500px) rotate(-32deg);
+    transition-property: transform, transform-origin;
+    transition-duration: 1s;
 }
 
 .page-recto {
@@ -37,22 +85,29 @@ body {
     overflow: hidden;
 }
 
-    .page-recto > div {
-        -webkit-transform-origin: 285px 0;
-        -webkit-transform: translate(1030px, 500px) rotate(32deg);
-        -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
-        -webkit-transition-duration: 1s;
-        width: 285px;
-        height: 388px;
-        position: relative;
-    }
+.page-recto > div {
+    -webkit-transform-origin: var(--recto-origin-x) 0;
+    -webkit-transform: translate(var(--recto-initial-x), 500px) rotate(32deg);
+    -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+    -webkit-transition-duration: 1s;
+    width: var(--page-width);
+    height: var(--page-height);
+    position: relative;
+    transform-origin: var(--recto-origin-x) 0;
+    transform: translate(var(--recto-initial-x), 500px) rotate(32deg);
+    transition-property: transform, transform-origin;
+    transition-duration: 1s;
+    background: #fff;
+}
 
-        .page-recto > div img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Simule background-size: cover */
-            object-position: center; /* Centrer l'image */
-        }
+.page-recto > div img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    background: #fff;
+}
 
 .verso {
     -webkit-transform-origin: 1315px 500px;
@@ -61,6 +116,10 @@ body {
     -webkit-transition-duration: 1s;
     position: absolute;
     z-index: 2;
+    transform-origin: 1315px 500px;
+    transform: translate(-1030px, -500px) rotate(-32deg);
+    transition-property: transform, transform-origin;
+    transition-duration: 1s;
 }
 
 .page-verso {
@@ -69,68 +128,154 @@ body {
     overflow: hidden;
 }
 
-    .page-verso > div {
-        -webkit-transform-origin: 0 0;
-        -webkit-transform: translate(1255px, 500px) rotate(-32deg);
-        -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
-        -webkit-transition-duration: 1s;
-        -webkit-box-shadow: 0 0 11px rgba(0, 0, 0, .5);
-        width: 285px;
-        height: 388px;
-        position: relative;
-    }
+.page-verso > div {
+    -webkit-transform-origin: 0 0;
+    -webkit-transform: translate(1255px, 500px) rotate(-32deg);
+    -webkit-transition-property: -webkit-transform, -webkit-transform-origin;
+    -webkit-transition-duration: 1s;
+    -webkit-box-shadow: none;
+    width: var(--page-width);
+    height: var(--page-height);
+    position: relative;
+    transform-origin: 0 0;
+    transform: translate(1255px, 500px) rotate(-32deg);
+    transition-property: transform, transform-origin;
+    transition-duration: 1s;
+    box-shadow: none;
+    background: #fff;
+}
 
-        .page-verso > div img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Simule background-size: cover */
-            object-position: center; /* Centrer l'image */
-        }
+.page-verso > div img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    background: #fff;
+}
 
-        .page-verso > div > div {
-            width: 9px;
-            height: 500px;
-            float: right;
-            background: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0)), to(rgba(0,0,0,.20)));
-        }
+.page-verso > div::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 9px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .02));
+}
 
 .page-flip.flipped .recto {
     -webkit-transform-origin: 1570px 500px;
     -webkit-transform: translate(-1285px, -500px) rotate(0deg);
+    transform-origin: 1570px 500px;
+    transform: translate(-1285px, -500px) rotate(0deg);
 }
 
 .page-flip.flipped .page-recto > div {
-    -webkit-transform-origin: 285px 0;
-    -webkit-transform: translate(1285px, 500px) rotate(0deg);
+    -webkit-transform-origin: var(--recto-origin-x) 0;
+    -webkit-transform: translate(var(--recto-open-x), 500px) rotate(0deg);
+    transform-origin: var(--recto-origin-x) 0;
+    transform: translate(var(--recto-open-x), 500px) rotate(0deg);
 }
 
 .page-flip.flipped .verso {
     -webkit-transform-origin: 1570px 500px;
     -webkit-transform: translate(-1285px, -500px) rotate(0deg);
+    transform-origin: 1570px 500px;
+    transform: translate(-1285px, -500px) rotate(0deg);
 }
 
 .page-flip.flipped .page-verso > div {
     -webkit-transform-origin: 0 0;
-    -webkit-transform: translate(1000px, 500px) rotate(0deg);
+    -webkit-transform: translate(var(--verso-open-x), 500px) rotate(0deg);
+    transform-origin: 0 0;
+    transform: translate(var(--verso-open-x), 500px) rotate(0deg);
 }
 
-/* Style des boutons de contr�le */
+.controls {
+    position: relative;
+    z-index: 10;
+    width: min(100%, 32rem);
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: var(--controls-gap);
+}
+
 .control-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 0.85rem 1.4rem;
+    font-size: 1rem;
     background-color: #3498db;
     color: white;
     border: none;
+    border-radius: 999px;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.rotate-btn {
-    right: 10px;
+.control-btn:hover {
+    background-color: #217dbb;
+    transform: translateY(-1px);
 }
 
-.close-btn {
-    left: 10px;
+.control-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 700px) {
+    :root {
+        --page-lift: clamp(8px, 2.5vh, 18px);
+        --controls-gap: clamp(10px, 2vh, 18px);
+    }
+
+    .layout {
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .control-btn {
+        flex: 1 1 12rem;
+    }
+}
+
+@media (max-height: 700px) {
+    :root {
+        --page-lift: clamp(6px, 2vh, 16px);
+        --controls-gap: clamp(8px, 1.8vh, 16px);
+    }
+
+    .layout {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .control-btn {
+        padding: 0.7rem 1.1rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+    :root {
+        --page-lift: clamp(4px, 1.5vh, 12px);
+        --controls-gap: clamp(6px, 1.2vh, 12px);
+    }
+
+    .layout {
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.6rem;
+    }
+
+    .controls {
+        width: auto;
+        max-width: 100%;
+    }
+
+    .control-btn {
+        flex: 0 1 auto;
+        padding: 0.65rem 1rem;
+        font-size: 0.92rem;
+    }
 }
