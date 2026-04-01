@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const baseBookHeight = 400;
     const basePageWidth = 285;
     const basePageHeight = 388;
+    const centeredRightPageOffsetX = -(baseBookWidth - basePageWidth);
     const maxScale = 2.5;
 
     function updateBookScale() {
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nextScale = Math.max(0.18, Math.min(maxScale, scaleFromWidth, scaleFromHeight));
 
         root.style.setProperty("--scale-factor", nextScale.toFixed(3));
-        root.style.setProperty("--book-offset-x", "0px");
+        root.style.setProperty("--book-offset-x", `${centeredRightPageOffsetX}px`);
         root.style.setProperty("--book-offset-y", "0px");
     }
 
