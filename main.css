@@ -1,6 +1,7 @@
 :root {
     --scale-factor: 1;
     --book-offset-x: 0px;
+    --book-offset-y: 0px;
     --page-width: 285px;
     --page-height: 388px;
     --flip-width: 1705px;
@@ -15,6 +16,14 @@
 
 * {
     box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 body {
@@ -52,7 +61,8 @@ body {
     position: relative;
     width: 680px;
     height: 400px;
-    transform: translateX(var(--book-offset-x)) scale(var(--scale-factor));
+    translate: var(--book-offset-x) var(--book-offset-y);
+    transform: scale(var(--scale-factor));
     transform-origin: top center;
     margin-left: auto;
     margin-right: auto;
@@ -241,19 +251,6 @@ body {
 }
 
 @media (max-width: 700px) and (orientation: portrait) {
-    .layout {
-        justify-content: flex-start;
-        padding: 0.75rem 0.75rem 5rem;
-        gap: 0.35rem;
-    }
-
-    .book-stage {
-        width: 100%;
-        justify-content: center;
-        margin-top: 0;
-        margin-bottom: 0;
-    }
-
     .controls {
         position: fixed;
         left: 0;
