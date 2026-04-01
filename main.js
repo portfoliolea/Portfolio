@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const zIndexTimeouts = new Map();
     const baseBookWidth = 680;
     const baseBookHeight = 400;
+    const basePageWidth = 285;
+    const portraitOffsetX = (baseBookWidth - basePageWidth) / 2;
     const maxScale = 2.5;
 
     function updateBookScale() {
@@ -17,17 +19,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
         const compactScreen = viewportWidth < 700;
         const landscapePhone = compactScreen && viewportWidth > viewportHeight;
+        const portraitPhone = compactScreen && viewportHeight >= viewportWidth;
         const horizontalPadding = landscapePhone ? 16 : (compactScreen ? 24 : 64);
         const controlsHeight = controls ? controls.offsetHeight : 56;
         const layoutGap = viewportHeight < 700 ? 12 : 24;
         const verticalChrome = landscapePhone ? 12 : (compactScreen ? 24 : 40);
         const availableWidth = Math.max(180, viewportWidth - horizontalPadding);
         const availableHeight = Math.max(180, viewportHeight - controlsHeight - layoutGap - verticalChrome);
-        const scaleFromWidth = availableWidth / baseBookWidth;
+        const widthReference = portraitPhone ? basePageWidth : baseBookWidth;
+        const scaleFromWidth = availableWidth / widthReference;
         const scaleFromHeight = availableHeight / baseBookHeight;
         const nextScale = Math.max(0.18, Math.min(maxScale, scaleFromWidth, scaleFromHeight));
 
         root.style.setProperty("--scale-factor", nextScale.toFixed(3));
+        root.style.setProperty("--book-offset-x", portraitPhone ? `${portraitOffsetX}px` : "0px");
     }
 
     pageFlipsArray.forEach((page, i) => {
