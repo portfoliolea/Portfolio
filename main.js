@@ -12,27 +12,36 @@ document.addEventListener("DOMContentLoaded", function () {
     const baseBookHeight = 400;
     const basePageWidth = 285;
     const basePageHeight = 388;
-    const centeredRightPageOffsetX = -(baseBookWidth - basePageWidth);
     const maxScale = 2.5;
 
     function updateBookScale() {
         const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
         const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
         const compactScreen = viewportWidth < 700;
-        const landscapePhone = compactScreen && viewportWidth > viewportHeight;
-        const horizontalPadding = landscapePhone ? 16 : (compactScreen ? 24 : 64);
+        const horizontalPadding = compactScreen ? 12 : 64;
         const controlsHeight = controls ? controls.offsetHeight : 56;
         const layoutGap = viewportHeight < 700 ? 12 : 24;
-        const verticalChrome = landscapePhone ? 12 : (compactScreen ? 24 : 40);
+        const verticalChrome = compactScreen ? 16 : 40;
         const availableWidth = Math.max(180, viewportWidth - horizontalPadding);
         const availableHeight = Math.max(180, viewportHeight - controlsHeight - layoutGap - verticalChrome);
-        const scaleFromWidth = availableWidth / basePageWidth;
-        const scaleFromHeight = availableHeight / basePageHeight;
+        const widthReference = baseBookWidth;
+        const heightReference = baseBookHeight;
+        const scaleFromWidth = availableWidth / widthReference;
+        const scaleFromHeight = availableHeight / heightReference;
         const nextScale = Math.max(0.18, Math.min(maxScale, scaleFromWidth, scaleFromHeight));
 
         root.style.setProperty("--scale-factor", nextScale.toFixed(3));
-        root.style.setProperty("--book-offset-x", `${centeredRightPageOffsetX}px`);
+        root.style.setProperty("--book-offset-x", "0px");
         root.style.setProperty("--book-offset-y", "0px");
+
+        if (pageFlipsArray.length > 0) {
+            const firstPageFlip = pageFlipsArray[0];
+            const firstPageFlipRect = firstPageFlip.getBoundingClientRect();
+            const flipStyles = window.getComputedStyle(firstPageFlip);
+            const visibleStartX = firstPageFlipRect.left + (parseFloat(flipStyles.paddingLeft) * nextScale);
+            const offsetX = (viewportWidth / 2) - visibleStartX;
+            root.style.setProperty("--book-offset-x", `${offsetX.toFixed(2)}px`);
+        }
     }
 
     pageFlipsArray.forEach((page, i) => {
